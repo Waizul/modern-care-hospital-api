@@ -20,7 +20,26 @@ async function run() {
       
       const DB = client.db('mchDB')
 
-      
+      const users = DB.collection('users')
+
+      app.post('/users',async(req,res) => {
+          const user =  req.body
+          console.log(user)
+          const savedUser = await users.insertOne(user)
+          res.status(201).json(savedUser)
+      })
+
+      app.put('/users', async(req,res)=>{
+          const user = req.body
+          console.log(user)
+          const filter = {email: user.email}
+          const options = {upsert: true}
+          const updateDoc = {$set: user}
+          const result = await users.updateOne(
+              filter, updateDoc, options
+          ) 
+          res.status(200).json(result)
+      })
     } finally {
       // Ensures that the client will close when you finish/error
     //   await client.close();
